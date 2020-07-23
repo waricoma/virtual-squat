@@ -1,0 +1,109 @@
+{
+  "name": "virtual-squat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Virtual Squat using WebRTC, Three.js, Vue",
+  "author": "waricoma <waricoma@devne.co>",
+  "contributors": [
+    "waricoma <waricoma@devne.co>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/waricoma/virtual-squat#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waricoma/virtual-squat.git"
+  },
+  "keywords": [
+    "TypeScript",
+    "Vue",
+    "Three.js"
+  ],
+  "bugs": {
+    "url": "https://github.com/waricoma/virtual-squat/issues"
+  },
+  "engines": {
+    "yarn": ">=1.22.4",
+    "node": ">=12.16.2"
+  },
+  "scripts": {
+    "start": "yarn run generate-vue && yarn run start-express",
+    "start-express": "cd ./express && yarn install && yarn run build && yarn run start",
+    "generate-vue": "cd ./vue && yarn install && yarn run generate",
+    "commit": "git cz",
+    "test": "yarn run test-express && yarn run test-vue",
+    "test-express": "cd ./express && yarn run test",
+    "test-vue": "cd ./vue && yarn run test:unit",
+    "build": "yarn run build-express && yarn run build-vue",
+    "build-express": "cd ./express && yarn run build",
+    "build-vue": "cd ./vue && yarn run generate",
+    "document": "yarn run document-express && yarn run document-vue",
+    "document-express": "cd ./express && yarn run document",
+    "document-vue": "cd ./vue && yarn run document",
+    "readme": "npx readme-md-generator && yarn run readme-express && yarn run readme-vue",
+    "readme-express": "cd ./express && npx readme-md-generator",
+    "readme-vue": "# Now using pre-generated readme...",
+    "lint": "yarn run lint-code && yarn run lint-md && yarn run lint-text-en",
+    "lint-code": "yarn run lint-code-express && yarn run lint-code-vue",
+    "lint-code-express": "cd ./express && yarn run lint",
+    "lint-code-vue": "cd ./vue && yarn run lint",
+    "lint-text-en": "yarn run save-md && yarn run lint-text-en-express && yarn run lint-text-en-vue",
+    "lint-text-en-express": "textlint --fix ./express/*.md --config ./.textlints/.en.textlintrc",
+    "lint-text-en-vue": "textlint --fix ./vue/*.md --config ./.textlints/.en.textlintrc",
+    "lint-text-ja": "yarn run save-md && yarn run lint-text-ja-express && yarn run lint-text-ja-vue",
+    "lint-text-ja-express": "textlint --fix ./express/*.md --config ./.textlints/.ja.textlintrc",
+    "lint-text-ja-vue": "textlint --fix ./vue/*.md --config ./.textlints/.ja.textlintrc",
+    "lint-md": "# yarn run lint-md-express && yarn run lint-md-vue",
+    "lint-md-express": "markdownlint ./express/*.md --fix",
+    "lint-md-vue": "markdownlint ./vue/*.md --fix",
+    "save-md": "yarn run save-md-express && yarn run save-md-vue",
+    "save-md-express": "mkdir -p ./.textlints/saved/express && cp ./express/*.md ./.textlints/saved/express",
+    "save-md-vue": "mkdir -p ./.textlints/saved/vue && cp ./vue/*.md ./.textlints/saved/vue",
+    "restore-md": "yarn run restore-md-express && yarn run restore-md-vue",
+    "restore-md-express": "mkdir -p ./.textlints/saved/express && cp ./.textlints/saved/express/*.md ./express",
+    "restore-md-vue": "mkdir -p ./.textlints/saved/vue &&  cp ./.textlints/saved/vue/*.md ./vue",
+    "ignore": "curl https://raw.githubusercontent.com/microsoft/TypeScript/master/.gitignore | add-text-to-markdown ./.gitignore --section 'microsoft/TypeScript:.gitignore' --write"
+  },
+  "devDependencies": {
+    "@textlint/textlint-plugin-markdown": "5.1.12",
+    "@typescript-eslint/eslint-plugin": "3.5.0",
+    "@typescript-eslint/parser": "3.5.0",
+    "@vue/cli": "^4.4.6",
+    "add-text-to-markdown": "2.0.0",
+    "commitizen": "4.1.2",
+    "cz-emoji": "1.2.1",
+    "eslint": "7.4.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-prettier": "3.1.4",
+    "generator-express-no-stress-typescript": "9.1.0",
+    "husky": "4.2.5",
+    "markdownlint": "0.20.4",
+    "markdownlint-cli": "0.23.2",
+    "nodemon-webpack-plugin": "4.3.2",
+    "readme-md-generator": "1.0.0",
+    "textlint": "11.6.3",
+    "textlint-filter-rule-comments": "1.2.2",
+    "textlint-rule-ginger": "2.2.1",
+    "textlint-rule-ja-space-after-question": "2.0.1",
+    "textlint-rule-max-ten": "2.0.3",
+    "textlint-rule-no-dead-link": "4.7.0",
+    "textlint-rule-no-mix-dearu-desumasu": "4.0.1",
+    "textlint-rule-preset-ja-spacing": "2.0.1",
+    "textlint-rule-preset-ja-technical-writing": "4.0.0",
+    "textlint-rule-preset-japanese": "5.0.0",
+    "textlint-rule-preset-jtf-style": "2.3.4",
+    "textlint-rule-prh": "5.3.0",
+    "textlint-rule-spellcheck-tech-word": "5.0.0",
+    "yo": "3.1.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run document && yarn run lint && git add --all",
+      "pre-push": "#"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-emoji"
+    }
+  }
+}

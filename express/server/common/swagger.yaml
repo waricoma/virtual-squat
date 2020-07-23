@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: virtual-squat_express
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:3000/api'
+paths:
+  /example/create:
+    get:
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                format: double
+                type: number
+          description: Ok
+      security: []
+      operationId: Create
+components:
+  parameters: {}
+  responses: {}
+  examples: {}
+  headers: {}
+  requestBodies: {}
+  schemas: {}
+  securitySchemes: {}
