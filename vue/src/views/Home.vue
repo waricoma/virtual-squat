@@ -13,7 +13,7 @@
       <br />
       <div id="result_gyro"></div>
       <a href="javascript:window.location.reload(true);">reload</a>
-     </div>
+    </div>
   </div>
 </template>
 
@@ -167,7 +167,7 @@ export default {
       }
       flag = true;
     });
-  
+
     (document.getElementsByClassName(
       'home'
     )[0] as HTMLElement).style.height = `${window.innerHeight}px`;
@@ -370,6 +370,7 @@ export default {
       this.scene.add(this.boxMap[options.lineId].box);
       this.scene.add(this.boxMap[options.lineId].total);
     },
+  },
 };
 </script>
 
