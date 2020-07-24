@@ -5,7 +5,8 @@
   "description": "Virtual Squat using WebRTC, Three.js, Vue",
   "author": "waricoma <waricoma@devne.co>",
   "contributors": [
-    "waricoma <waricoma@devne.co>"
+    "waricoma <waricoma@devne.co>",
+    "RyujiOdaJP <ryuji.oda@gmail.com>"
   ],
   "license": "MIT",
   "homepage": "https://github.com/waricoma/virtual-squat#readme",
@@ -105,5 +106,8 @@
     "commitizen": {
       "path": "./node_modules/cz-emoji"
     }
+  },
+  "dependencies": {
+    "live-server": "^1.2.1"
   }
 }
