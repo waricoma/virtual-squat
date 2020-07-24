@@ -11,8 +11,11 @@
     "document": "typedoc --plugin typedoc-plugin-markdown --out ./docs/ ./server/"
   },
   "dependencies": {
+    "cannon": "^0.6.2",
     "core-js": "^3.6.5",
     "register-service-worker": "^1.7.1",
+    "three": "^0.118.3",
+    "three-orbit-controls": "^82.1.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",
