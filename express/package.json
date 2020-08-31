@@ -57,7 +57,7 @@
     "@types/pino": "6.3.0",
     "@typescript-eslint/eslint-plugin": "3.5.0",
     "@typescript-eslint/parser": "3.5.0",
-    "api-spec-converter": "2.11.1",
+    "api-spec-converter": "2.11.2",
     "dredd": "13.1.2",
     "eslint": "7.4.0",
     "eslint-config-prettier": "6.11.0",
