@@ -4,15 +4,18 @@
     <HelloWorld msg="Welcome to Your Vue.js App" / -->
     <canvas id="canvas"></canvas>
     <div id="control">
-      control
-      <div id="result_acc"></div>
-      <br />
-      <div id="count"></div>
-      <br />
-      <div id="status"></div>
-      <br />
-      <div id="result_gyro"></div>
-      <a href="javascript:window.location.reload(true);">reload</a>
+      <div>{{ upDownCount }}</div>
+      <div>{{ upDownStatus ? '立ち上がりました！' : 'しゃがみました！' }}</div>
+      <div>{{ myLineId }}</div>
+      <div>
+        <input v-model="yourLineId" />
+      </div>
+      <div>
+        <button v-on:click="connect">Connect!</button>
+      </div>
+      <div>
+        <a href="javascript:window.location.reload(true);">reload</a>
+      </div>
     </div>
   </div>
 </template>
@@ -21,6 +24,7 @@
 import * as THREE from 'three';
 // import CANNON from 'cannon';
 import threeOrbitControls from 'three-orbit-controls';
+import Peer from 'skyway-js';
 import delay from 'delay';
 
 const OrbitControls = threeOrbitControls(THREE);
@@ -79,8 +83,18 @@ export default {
     const fontLoader = new THREE.FontLoader();
     const helvetikerRegularFont = null;
 
-    const uppedKeyA = false;
-    const uppedKeyB = false;
+    const upDownFlag = true;
+    const upDownStatus: boolean = null;
+    const upDownCount = 0;
+
+    const myLineId = '';
+    // const yourLineId = '';
+    const connecting = false;
+    const connection = null;
+    const peer = new Peer({
+      key: 'af9431e2-f5ef-434f-a9df-6626065e6fe6',
+      debug: 3,
+    });
 
     /*
     const world = new CANNON.World();
@@ -118,62 +132,41 @@ export default {
       OrbitControls,
       fontLoader,
       helvetikerRegularFont,
+      upDownFlag,
+      upDownStatus,
+      upDownCount,
+      myLineId,
+      connecting,
+      connection,
+      peer,
       // world,
       // phyBox,
-      uppedKeyA,
-      uppedKeyB,
     };
   },
   mounted() {
-    let count = 0;
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    let flag = true;
-
-    window.addEventListener('devicemotion', async event => {
-      x = event.accelerationIncludingGravity.x;
-      y = event.acceleration.y;
-      z = event.accelerationIncludingGravity.z;
-
-      const result1 = document.getElementById('result_acc');
-      result1.innerHTML = `
-    重力加速度<br />
-    X：${x.toFixed(2)}(m/s^2)<br />
-    Y：${y.toFixed(2)}(m/s^2)<br />
-    Z：${z.toFixed(2)}(m/s^2)<br />
-    `;
-
-      const countTarget = document.getElementById('count');
-      const statusTarget = document.getElementById('status');
-
-      if (!flag) {
-        return;
-      }
-
-      flag = false;
-
-      await delay(300);
-      // しゃがみ
-      if (parseInt(y.toFixed(2)) > 0.6) {
-        statusTarget.innerHTML = 'しゃがみました！';
-      }
-      await delay(300);
-      // 立ち上がり
-      if (parseInt(y.toFixed(2)) < -0.5) {
-        count++;
-        countTarget.innerHTML = Math.floor(count) + ' 回';
-        statusTarget.innerHTML = '立ち上がりました！';
-      }
-      flag = true;
-    });
-
     (document.getElementsByClassName(
       'home'
     )[0] as HTMLElement).style.height = `${window.innerHeight}px`;
     const canvasSize = this.canvasSizeManager({
       width: window.innerWidth,
       height: window.innerHeight,
+    });
+
+    this.peer.on('open', () => {
+      this.myLineId = this.peer.id;
+    });
+
+    this.peer.on('error', err => {
+      throw err;
+    });
+
+    this.peer.on('connection', connection => {
+      connection.on('open', () => {
+        this.connection = connection;
+        this.connecting = true;
+      });
+
+      connection.on('data', this.webRtcHandler);
     });
 
     this.fontLoader.load(
@@ -206,8 +199,8 @@ export default {
     new OrbitControls(this.camera, this.renderer.domElement);
     this.animate();
 
-    window.addEventListener('keyup', this.keyUp);
     window.addEventListener('resize', this.resized);
+    window.addEventListener('devicemotion', this.devicemotionHandler);
   },
   methods: {
     animate() {
@@ -215,38 +208,6 @@ export default {
       // this.world.step(1 / 60);
       // this.box.position.copy(this.phyBox.position);
       // this.box.quaternion.copy(this.phyBox.quaternion);
-
-      if (this.uppedKeyA) {
-        this.addBox({
-          lineId: 'test',
-          boxOp: {
-            name: 'waricoma',
-            icon:
-              'https://pbs.twimg.com/profile_images/796716956585902081/ml1P8jqU.jpg',
-            total: 10,
-            x: 3,
-            z: 5,
-            upDown: true,
-          },
-        });
-        this.uppedKeyA = false;
-      }
-
-      if (this.uppedKeyB) {
-        this.updateBox({
-          lineId: 'test',
-          boxOp: {
-            name: 'waricoma',
-            icon:
-              'https://pbs.twimg.com/profile_images/796716956585902081/ml1P8jqU.jpg',
-            total: 11,
-            x: 3,
-            z: 5,
-            upDown: false,
-          },
-        });
-        this.uppedKeyB = false;
-      }
 
       this.renderer.render(this.scene, this.camera);
     },
@@ -263,14 +224,6 @@ export default {
       this.renderer.setSize(canvasSize.width, canvasSize.height);
       this.camera.aspect = canvasSize.width / canvasSize.height;
       this.camera.updateProjectionMatrix();
-    },
-    keyUp(e) {
-      if (e.code === 'KeyA') {
-        this.uppedKeyA = true;
-      }
-      if (e.code === 'KeyB') {
-        this.uppedKeyB = true;
-      }
     },
     canvasSizeManager(winSize: {
       width: number;
@@ -305,6 +258,9 @@ export default {
       return result;
     },
     addBox(options: { lineId: string; boxOp: BoxOp }) {
+      if (!this.helvetikerRegularFont) {
+        return;
+      }
       if (options.lineId in this.boxMap) {
         return;
       }
@@ -342,6 +298,9 @@ export default {
       this.scene.add(this.boxMap[options.lineId].total);
     },
     updateBox(options: { lineId: string; boxOp: BoxOp }) {
+      if (!this.helvetikerRegularFont) {
+        return;
+      }
       this.addBox(options);
 
       this.boxMap[options.lineId].box.position.set(
@@ -369,6 +328,78 @@ export default {
 
       this.scene.add(this.boxMap[options.lineId].box);
       this.scene.add(this.boxMap[options.lineId].total);
+    },
+    async devicemotionHandler(event) {
+      const y = event.acceleration.y;
+
+      if (!this.upDownFlag) {
+        return;
+      }
+      this.upDownFlag = false;
+      console.log(111);
+
+      await delay(300);
+      console.log(222);
+      if (parseInt(y.toFixed(2)) > 0.6) {
+        console.log(333);
+        this.whenUpped();
+      }
+
+      await delay(300);
+      if (parseInt(y.toFixed(2)) < -0.5) {
+        console.log(444);
+        ++this.upDownCount;
+        this.whenDowned();
+      }
+
+      this.upDownFlag = true;
+    },
+    whenUpped() {
+      this.upDownStatus = true;
+      this.whenMoved();
+      // if (this.myLineId === '') {
+      //   return;
+      // }
+
+      // this.connection.send()
+    },
+    whenDowned() {
+      this.upDownStatus = false;
+      this.whenMoved();
+      // if (this.myLineId === '') {
+      //  return;
+      // }
+
+      // this.connection.send()
+    },
+    whenMoved() {
+      this.updateBox({
+        lineId: 'test',
+        boxOp: {
+          name: 'waricoma',
+          icon:
+            'https://pbs.twimg.com/profile_images/796716956585902081/ml1P8jqU.jpg',
+          total: this.upDownCount,
+          x: 0,
+          z: 0,
+          upDown: this.upDownStatus,
+        },
+      });
+    },
+    webRtcHandler(data) {
+      console.log(data);
+    },
+    connect() {
+      console.log(111);
+      /*
+      this.peer.on('open', () => {
+        this.connection = this.peer.connect(this.yourLineId);
+
+        this.connection.on('open', () => {
+          console.log(100);
+        });
+      });
+      */
     },
   },
 };
